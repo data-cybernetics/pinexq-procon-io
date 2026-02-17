@@ -10,8 +10,6 @@ from typing import IO
 
 from matplotlib.figure import Figure
 
-plotly_media_type = "application/vnd.plotly.v1+json"
-
 
 def figure_to_png_buffer(buffer: IO, figure: Figure) -> None:
     """Write a Matplotlib *figure* to *buffer* as PNG bytes.
