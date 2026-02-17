@@ -10,8 +10,11 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = []
 
-[project.scripts]
-pinexq-procon-io = "pinexq.procon.io:main"
+[project.optional-dependencies]
+parquet = [
+    "pandas>=3.0.0",
+    "pyarrow>=23.0.1",
+]
 
 [tool.uv.build-backend]
 module-name = "pinexq.procon.io"
