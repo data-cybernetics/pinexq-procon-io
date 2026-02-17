@@ -1,11 +1,55 @@
 # pinexq-procon-io
 
-I/O utilities for the **pinexq** ecosystem. This package provides serialization
-and deserialization helpers for common data formats used across `pinexq.procon`
-services — JSON (via Pydantic), Apache Parquet, and Matplotlib figures.
+I/O utilities for the **pinexq** ecosystem. This package provides reader and
+writer callables for common data formats — JSON (via Pydantic), Apache Parquet,
+and Matplotlib figures — designed to plug directly into
+[`pinexq-procon`](https://pypi.org/project/pinexq-procon/) dataslot
+annotations.
 
-It is part of the `pinexq.procon` namespace and is designed to be installed
-alongside other packages in that namespace.
+## How readers and writers work with dataslots
+
+In `pinexq-procon`, a processing step declares its inputs and outputs through
+`@dataslot` annotations. Each annotation accepts a **reader** or **writer**
+callable that handles serialization:
+
+- `dataslot.input(reader=...)` — the reader is called with a file-like object
+  and must return the deserialized data.
+- `dataslot.output(writer=...)` — the writer is called with a file-like object
+  and the data to serialize.
+- `dataslot.returns(writer=...)` — same as output, but for the function's
+  return value.
+
+The functions in `pinexq.procon.io` follow exactly these signatures
+(`Callable[[IO], T]` for readers, `Callable[[IO, T], None]` for writers) so
+they can be passed directly to a dataslot annotation.
+
+### Example
+
+```python
+from pinexq.procon.dataslots import dataslot, MediaTypes
+from pinexq.procon.io import pydantic_reader, base_model_dump_json
+from pinexq.procon.io.parquet import parquet_buffer_reader, parquet_buffer_writer
+from pinexq.procon.io.matplotlib import figure_to_png_buffer
+from pydantic import BaseModel
+
+
+class Config(BaseModel):
+    threshold: float
+
+
+@dataslot.input("config", media_type=MediaTypes.JSON, reader=pydantic_reader(Config))
+@dataslot.input("data_in", media_type=MediaTypes.OCTETSTREAM, reader=parquet_buffer_reader)
+@dataslot.output("data_out", media_type=MediaTypes.OCTETSTREAM, writer=parquet_buffer_writer)
+@dataslot.returns(media_type=MediaTypes.PNG, writer=figure_to_png_buffer)
+def process(config: Config, data_in, data_out, **kwargs):
+    # config is already deserialized into a Config instance by pydantic_reader
+    # data_in is already a pandas DataFrame via parquet_buffer_reader
+    filtered = data_in[data_in["value"] > config.threshold]
+    # data_out will be serialized to Parquet via parquet_buffer_writer
+    data_out = filtered
+    # the returned figure will be written as PNG via figure_to_png_buffer
+    return create_plot(filtered)
+```
 
 ## Installation
 
