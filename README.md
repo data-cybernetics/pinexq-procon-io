@@ -2,7 +2,7 @@
 
 I/O utilities for the **pinexq** ecosystem. This package provides reader and
 writer callables for common data formats — JSON (via Pydantic), Apache Parquet,
-and Matplotlib figures — designed to plug directly into
+Matplotlib figures, and Plotly JSON — designed to plug directly into
 [`pinexq-procon`](https://pypi.org/project/pinexq-procon/) dataslot
 annotations.
 
@@ -103,10 +103,23 @@ pip install "pinexq-procon-io[matplotlib] @ git+https://github.com/data-cybernet
 from pinexq.procon.io.matplotlib import figure_to_png_buffer
 ```
 
+### Plotly
+
+Adds support for writing pandas DataFrames as Plotly-compatible JSON (uses
+scipy sparse arrays internally).
+
+```bash
+pip install "pinexq-procon-io[plotly] @ git+https://github.com/data-cybernetics/pinexq-procon-io.git"
+```
+
+```python
+from pinexq.procon.io.plotly import plotly_json_writer
+```
+
 ### Installing all extras
 
 ```bash
-pip install "pinexq-procon-io[parquet,matplotlib] @ git+https://github.com/data-cybernetics/pinexq-procon-io.git"
+pip install "pinexq-procon-io[parquet,matplotlib,plotly] @ git+https://github.com/data-cybernetics/pinexq-procon-io.git"
 ```
 
 ## Usage
@@ -130,6 +143,12 @@ from pinexq.procon.io.parquet import parquet_buffer_writer, parquet_buffer_reade
 
 ```python
 from pinexq.procon.io.matplotlib import figure_to_png_buffer
+```
+
+### Plotly helpers (requires `plotly` extra)
+
+```python
+from pinexq.procon.io.plotly import plotly_json_writer, to_plotly_json
 ```
 
 ## Development

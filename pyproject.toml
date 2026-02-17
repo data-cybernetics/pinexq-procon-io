@@ -20,6 +20,9 @@ parquet = [
     "pandas>=3.0.0",
     "pyarrow>=23.0.1",
 ]
+plotly = [
+    "scipy>=1.15.3",
+]
 
 [tool.uv.build-backend]
 module-name = "pinexq.procon.io"
