@@ -36,13 +36,13 @@ def dict_2_json_writer(file: IO, data: dict) -> None:
     json.dump(data, file, indent=2)
 
 
-def base_model_dump_json(file: IO, model: BaseModel) -> None:
+def pydantic_writer(file: IO, model: BaseModel) -> None:
     """Serialize a Pydantic model to *file* as pretty-printed JSON.
 
     Conforms to the ``WriterType`` signature expected by
     :meth:`dataslot.output` and :meth:`dataslot.returns`::
 
-        @dataslot.returns(media_type=MediaTypes.JSON, writer=base_model_dump_json)
+        @dataslot.returns(media_type=MediaTypes.JSON, writer=pydantic_writer)
     """
     js = model.model_dump_json(indent=2)
     file.write(js)
