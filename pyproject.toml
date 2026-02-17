@@ -8,9 +8,14 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "pydantic>=2.12.5",
+]
 
 [project.optional-dependencies]
+matplotlib = [
+    "matplotlib>=3.10.8",
+]
 parquet = [
     "pandas>=3.0.0",
     "pyarrow>=23.0.1",
@@ -18,3 +23,8 @@ parquet = [
 
 [tool.uv.build-backend]
 module-name = "pinexq.procon.io"
+
+[dependency-groups]
+dev = [
+    "pandas-stubs>=3.0.0.260204",
+]
