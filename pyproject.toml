@@ -27,7 +27,11 @@ plotly = [
 [tool.uv.build-backend]
 module-name = "pinexq.procon.io"
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
 [dependency-groups]
 dev = [
     "pandas-stubs>=3.0.0.260204",
+    "pytest>=8.0",
 ]
