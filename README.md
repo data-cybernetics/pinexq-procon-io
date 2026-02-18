@@ -26,8 +26,11 @@ they can be passed directly to a dataslot annotation.
 ### Example
 
 ```python
-from pinexq.procon.dataslots import dataslot, MediaTypes
-from pinexq.procon.io import pydantic_reader, base_model_dump_json
+import pandas as pd
+from matplotlib.figure import Figure
+
+from pinexq.procon.dataslots import DataSlot, dataslot, MediaTypes
+from pinexq.procon.io import pydantic_reader, pydantic_writer
 from pinexq.procon.io.parquet import parquet_buffer_reader, parquet_buffer_writer
 from pinexq.procon.io.matplotlib import figure_to_png_buffer
 from pydantic import BaseModel
@@ -41,13 +44,14 @@ class Config(BaseModel):
 @dataslot.input("data_in", media_type=MediaTypes.OCTETSTREAM, reader=parquet_buffer_reader)
 @dataslot.output("data_out", media_type=MediaTypes.OCTETSTREAM, writer=parquet_buffer_writer)
 @dataslot.returns(media_type=MediaTypes.PNG, writer=figure_to_png_buffer)
-def process(config: Config, data_in, data_out, **kwargs):
+def process(config: Config, data_in: pd.DataFrame, data_out: DataSlot) -> Figure:
     # config is already deserialized into a Config instance by pydantic_reader
     # data_in is already a pandas DataFrame via parquet_buffer_reader
     filtered = data_in[data_in["value"] > config.threshold]
     # data_out will be serialized to Parquet via parquet_buffer_writer
-    data_out = filtered
+    data_out.write_data_to_slots(filtered)
     # the returned figure will be written as PNG via figure_to_png_buffer
+    # Please note that the function isn't implemented and returns a `Figure`.
     return create_plot(filtered)
 ```
 
