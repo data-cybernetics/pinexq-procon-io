@@ -13,5 +13,19 @@ import logging
 from typing import IO
 
 import polars as pl
+from polars.exceptions import PolarsError
+
+LOG = logging.getLogger(__name__)
 
 parquet_media_type = "application/vnd.apache.parquet"
+
+def polars_eager_reader(buffer: IO) -> pl.DataFrame | None:
+    try:
+        return pl.read_parquet(buffer)
+    except PolarsError as ex:
+        LOG.warning(f"PolarsError: {ex}")
+        return None
+
+def polars_eager_writer(buffer: IO, df: pl.DataFrame) -> None:
+    df.write_parquet(buffer)
+    buffer.seek(0)
