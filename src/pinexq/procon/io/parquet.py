@@ -11,8 +11,6 @@ import logging
 from typing import IO
 
 import pandas as pd
-import pyarrow as pa
-import pyarrow.parquet as pq
 from pyarrow import ArrowInvalid
 
 LOG = logging.getLogger(__name__)
@@ -31,8 +29,7 @@ def parquet_buffer_writer(buffer: IO, df: pd.DataFrame) -> None:
     The buffer position is reset to the beginning after writing so it can
     be read back immediately.
     """
-    table = pa.Table.from_pandas(df)
-    pq.write_table(table, buffer)
+    df.to_parquet(buffer)
     buffer.seek(0)
 
 
@@ -47,8 +44,8 @@ def parquet_buffer_reader(buffer: IO) -> pd.DataFrame | None:
     Returns ``None`` if the buffer does not contain valid Parquet data.
     """
     try:
-        return pq.read_table(buffer).to_pandas()
-    except ArrowInvalid as ex:
+        return pd.read_parquet(buffer)
+    except ArrowInvalid as ex: #Pandas raises most errors from the PyArrow engine directly
         LOG.warning(f"ArrowInvalid: {ex}")
         return None
 
