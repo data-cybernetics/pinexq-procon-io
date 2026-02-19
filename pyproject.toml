@@ -23,6 +23,9 @@ parquet = [
 plotly = [
     "scipy>=1.15.3",
 ]
+polars = [
+    "polars>=1.38.1",
+]
 
 [tool.uv.build-backend]
 module-name = "pinexq.procon.io"
