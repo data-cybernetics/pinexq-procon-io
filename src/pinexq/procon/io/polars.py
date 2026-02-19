@@ -26,6 +26,25 @@ def polars_eager_reader(buffer: IO) -> pl.DataFrame | None:
         LOG.warning(f"PolarsError: {ex}")
         return None
 
+def polars_eager_collection_reader(buffers: list[IO]) -> pl.DataFrame | None:
+    try:
+        return pl.read_parquet(buffers)
+    except PolarsError as ex:
+        LOG.warning(f"PolarsError: {ex}")
+        return None
+
 def polars_eager_writer(buffer: IO, df: pl.DataFrame) -> None:
     df.write_parquet(buffer)
+    buffer.seek(0)
+
+def polars_lazy_reader(buffer: IO) -> pl.LazyFrame | None:
+    # any error will not be raised until LazyFrame.collect()...
+    return pl.scan_parquet(buffer)
+
+def polars_lazy_collection_reader(buffers: list[IO]) -> pl.LazyFrame | None:
+    # any error will not be raised until LazyFrame.collect()...
+    return pl.scan_parquet(buffers)
+
+def polars_lazy_writer(buffer: IO, lf: pl.LazyFrame) -> None:
+    lf.sink_parquet(buffer)
     buffer.seek(0)
