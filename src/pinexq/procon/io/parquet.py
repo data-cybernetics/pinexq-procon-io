@@ -29,7 +29,7 @@ def parquet_buffer_writer(buffer: IO, df: pd.DataFrame) -> None:
     The buffer position is reset to the beginning after writing so it can
     be read back immediately.
     """
-    df.to_parquet(buffer)
+    df.to_parquet(buffer, engine="pyarrow")
     buffer.seek(0)
 
 
@@ -44,7 +44,7 @@ def parquet_buffer_reader(buffer: IO) -> pd.DataFrame | None:
     Returns ``None`` if the buffer does not contain valid Parquet data.
     """
     try:
-        return pd.read_parquet(buffer)
+        return pd.read_parquet(buffer, engine="pyarrow")
     except ArrowInvalid as ex: #Pandas raises most errors from the PyArrow engine directly
         LOG.warning(f"ArrowInvalid: {ex}")
         return None
